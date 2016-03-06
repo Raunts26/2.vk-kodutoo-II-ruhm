@@ -27,17 +27,37 @@
 
       <div id="build-view">
         <h1>Haldus</h1>
+        <div class="answer"></div>
 
-        <label for="motherboard">Nimi: </label><br>
-        <input type="text" name="motherboard" class="title"><br>
+        <div id="mb-view">
+          <label for="motherboard">Emaplaadi nimi: </label><br>
+          <input type="text" name="motherboard" class="motherboard"><br>
 
-        <label for="ingredients">Koostis: </label><br>
-        <input type="text" name="ingredients" class="ingredients"><br>
+          <label for="socket">Protsessori pesa: </label><br>
+          <input type="text" name="socket" class="socket"><br>
 
-        <label for="date">Valmistatud: </label><br>
-        <input type="date" name="date" class="date"><br>
+          <label for="ram-socket">Mälusiin: </label><br>
+          <input type="text" name="ram-socket" class="ram-socket"><br>
 
-        <button class="add-new-jar">Lisa purk</button>
+          <label for="max-ram">Maksimaalne mälu(GB): </label><br>
+          <input type="text" name="max-ram" class="max-ram"><br>
+
+          <label for="sata">SATA pesa: </label><br>
+          <input type="text" name="sata" class="sata"><br>
+
+          <label for="sata-amount">SATA pesade arv: </label><br>
+          <input type="text" name="sata-amount" class="sata-amount"><br>
+
+          <button class="add-mb">Edasi</button>
+        </div>
+
+        <div id="cpu-view">
+          <label for="cpu">CPU nimi: </label><br>
+          <input type="text" name="cpu" class="cpu"><br>
+
+          <button class="add-cpu">Edasi</button>
+        </div>
+
       </div>
 
       <div id="home-view">

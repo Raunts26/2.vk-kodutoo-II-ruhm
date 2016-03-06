@@ -94,7 +94,6 @@ main > *:target ~ * {
 }
 .menu-link:active {
     color: rgb(146, 168, 209);
-    ;
 }
 .menu-link.active-menu {
   border-top: 2px solid rgb(204, 255, 0);
@@ -102,9 +101,12 @@ main > *:target ~ * {
 .pull-right {
     float: right;
 }
-.title,
-.ingredients,
-.date,
+.motherboard,
+.socket,
+.ram-socket,
+.max-ram,
+.sata,
+.sata-amount,
 .search {
     width: 100%;
     margin-bottom: 10px;

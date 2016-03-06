@@ -1,32 +1,32 @@
 (function(){
   "use strict";
 
-  var Moosipurk = function() {
+  var Computer = function() {
 
-    // SINGLETON PATTERN
-    if(Moosipurk.instance) {
-      return Moosipurk.instance;
+    if(Computer.instance) {
+      return Computer.instance;
     }
 
-    Moosipurk.instance = this; // this viitab moosipurgile
+    Computer.instance = this;
 
-    this.routes = Moosipurk.routes;
+    this.routes = Computer.routes;
+    this.buildRoutes = Computer.buildRoutes;
 
     console.log(this);
-    //console.log('moosipurgi sees');
-    //Kõik muutujad, mis on üldised ja muudetavad
+
     this.currentRoute = null; // Hoian meeles, mis lehel olen
     this.interval = null;
+    this.currentBuildRoute = "mb-view";
 
     //Hoian kõiki purke siin
-    this.jars = [];
+    this.builds = [];
 
     // Panen rakenduse tööle
     this.init();
     };
 
     // Kirjeldatud kõik lehed
-    Moosipurk.routes = {
+    Computer.routes = {
       "home-view": {
         render: function() {
           //Käivitan siis kui jõuan lehele
@@ -45,8 +45,26 @@
       }
     };
 
+    Computer.buildRoutes = {
+      "mb-view": {
+        render: function() {
+          //Käivitan siis kui jõuan lehele
+          console.log('Olen MB');
+          document.querySelector('#mb-view').style.display = "block";
+          document.querySelector('#cpu-view').style.display = "none";
+        }
+      },
+      "cpu-view": {
+        render: function() {
+          console.log('Olen CPU');
+          document.querySelector('#mb-view').style.display = "none";
+          document.querySelector('#cpu-view').style.display = "block";
+        }
+      }
+    };
+
     //Kõik moosipurgi fn tulevad siia sisse
-    Moosipurk.prototype = {
+    Computer.prototype = {
       init: function() {
         console.log('Rakendus OK');
         //Siia tuleb esialgne loogika
@@ -62,14 +80,19 @@
           //hash oli, käivitan routeChange function
           this.routeChange();
         }
+
+        if(window.location.hash === '#build-view') {
+          this.viewChange();
+        }
+
         // Saan kätte purgid localStoragest, kui on
-        if(localStorage.jars) {
+        if(localStorage.builds) {
           //Võtan stringi ja teen tagasi objektideks
-          this.jars = JSON.parse(localStorage.jars);
-          //console.log('laadisin localStoragest massiiivi ' + this.jars.length);
+          this.builds = JSON.parse(localStorage.builds);
+          //console.log('laadisin localStoragest massiiivi ' + this.builds.length);
 
           //Tekitan loendi htmli
-          this.jars.forEach(function(jar) {
+          this.builds.forEach(function(jar) {
 
             var new_jar = new Jar(jar.title, jar.ingredients, jar.date);
 
@@ -82,7 +105,7 @@
         this.bindEvents();
       },
       bindEvents: function() {
-        document.querySelector('.add-new-jar').addEventListener('click', this.addNewClick.bind(this));
+        document.querySelector('.add-mb').addEventListener('click', this.addNewClick.bind(this));
 
         // Kuulan trükkimist otsimisel
         document.querySelector('.search').addEventListener('keyup', this.search.bind(this));
@@ -115,26 +138,30 @@
 
       addNewClick: function(event) {
         //Lisa uus purk
-        var title = document.querySelector('.title').value;
-        var ingredients = document.querySelector('.ingredients').value;
-        var date = document.querySelector('.date').value;
-        if(title === "" || ingredients === "" || date === "") {
+        var motherboard = document.querySelector('.motherboard').value;
+        var socket = document.querySelector('.socket').value;
+        var ram_socket = document.querySelector('.ram-socket').value;
+        var max_ram = document.querySelector('.max-ram').value;
+        var sata = document.querySelector('.sata').value;
+        var sata_amount = document.querySelector('.sata-amount').value;
+
+        if(motherboard === "" || socket === "" || ram_socket === "" || max_ram === "" || sata === "" || sata_amount === "") {
           this.showAnswer(false);
         } else {
-
+          this.currentBuildRoute = "cpu-view";
+          this.viewChange();
           this.showAnswer(true);
-          //console.log(title + ' ' + ingredients + ' ' + date);
-          var new_jar = new Jar(title, ingredients, date);
-          //console.log(new_jar);
+
+          /*var new_jar = new Jar(title, ingredients, date);
 
           //Lisan massiivi purgi
-          this.jars.push(new_jar);
-          console.log(JSON.stringify(this.jars));
+          this.builds.push(new_jar);
+          console.log(JSON.stringify(this.builds));
           // JSONI stringina salvestan localStorage'sse
-          localStorage.setItem('jars', JSON.stringify(this.jars));
+          localStorage.setItem('jars', JSON.stringify(this.builds));
 
           var li = new_jar.createHtmlElement();
-          document.querySelector('.list-of-jars').appendChild(li);
+          document.querySelector('.list-of-jars').appendChild(li);*/
         }
 
       },
@@ -145,6 +172,19 @@
           document.querySelector('.answer').innerHTML = "<strong><p style='color: red;'>Palun täida kõik lahtrid!</p></strong>";
         }
       },
+
+      viewChange: function() {
+        if(this.buildRoutes[this.currentBuildRoute]) {
+          console.log('ASD>>> ' + this.currentBuildRoute);
+
+          this.buildRoutes[this.currentBuildRoute].render();
+        } else {
+          // 404
+          console.log("404");
+          window.location.hash = '#home-view';
+        }
+      },
+
       routeChange: function(event) {
         this.currentRoute = window.location.hash.slice(1);
 
@@ -216,7 +256,7 @@
     };
 
     window.onload = function() {
-      var app = new Moosipurk();
+      var app = new Computer();
 
     };
 
