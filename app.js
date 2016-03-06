@@ -17,6 +17,7 @@
     this.currentRoute = null; // Hoian meeles, mis lehel olen
     this.interval = null;
     this.currentBuildRoute = "mb-view";
+    this.id = null;
 
     //Hoian kõiki purke siin
     this.builds = [];
@@ -92,20 +93,22 @@
           //console.log('laadisin localStoragest massiiivi ' + this.builds.length);
 
           //Tekitan loendi htmli
-          this.builds.forEach(function(jar) {
+          this.builds.forEach(function(component) {
 
-            var new_jar = new Jar(jar.title, jar.ingredients, jar.date);
+            var new_component = new Component(component.id, component.mb_name, component.mb_cpu_socket, component.cpu_name, component.cpu_socket);
 
-            var li = new_jar.createHtmlElement();
-            document.querySelector('.list-of-jars').appendChild(li);
+            var li = new_component.createHtmlElement();
+            document.querySelector('.list-of-builds').appendChild(li);
           });
         }
 
         //Hakka kuulama hiireklõpse
+        this.checkCPU();
         this.bindEvents();
       },
       bindEvents: function() {
-        document.querySelector('.add-mb').addEventListener('click', this.addNewClick.bind(this));
+        document.querySelector('.add-mb').addEventListener('click', this.addNewMB.bind(this));
+        document.querySelector('.add-cpu').addEventListener('click', this.addNewCPU.bind(this));
 
         // Kuulan trükkimist otsimisel
         document.querySelector('.search').addEventListener('keyup', this.search.bind(this));
@@ -116,7 +119,7 @@
         var needle = document.querySelector('.search').value.toLowerCase();
         console.log(needle);
 
-        var list = document.querySelectorAll('ul.list-of-jars li');
+        var list = document.querySelectorAll('ul.list-of-builds li');
         console.log(list);
 
         for(var i = 0; i < list.length; i++) {
@@ -136,7 +139,7 @@
         }
       },
 
-      addNewClick: function(event) {
+      addNewMB: function(event) {
         //Lisa uus purk
         var motherboard = document.querySelector('.motherboard').value;
         var socket = document.querySelector('.socket').value;
@@ -151,20 +154,65 @@
           this.currentBuildRoute = "cpu-view";
           this.viewChange();
           this.showAnswer(true);
-
-          /*var new_jar = new Jar(title, ingredients, date);
+          this.id = this.builds.length + 1;
+          var new_component = new Component(this.id, motherboard, socket);
 
           //Lisan massiivi purgi
-          this.builds.push(new_jar);
+          this.builds.push(new_component);
           console.log(JSON.stringify(this.builds));
           // JSONI stringina salvestan localStorage'sse
-          localStorage.setItem('jars', JSON.stringify(this.builds));
+          localStorage.setItem('builds', JSON.stringify(this.builds));
 
-          var li = new_jar.createHtmlElement();
-          document.querySelector('.list-of-jars').appendChild(li);*/
+          var li = new_component.createHtmlElement();
+          document.querySelector('.list-of-builds').appendChild(li);
         }
 
       },
+
+      addNewCPU: function(event) {
+        //Lisa uus purk
+        var name = document.querySelector('.cpu_name').value;
+        var socket = document.querySelector('.cpu_socket').value;
+
+        if(name === "" || socket === "") {
+          this.showAnswer(false);
+        } else {
+          this.currentBuildRoute = "mb-view";
+          this.viewChange();
+          this.showAnswer(true);
+          var current = this.builds[this.id - 1];
+
+          document.getElementById('build-' + (this.id)).style.display = "none";
+          var new_component = new Component(current.id, current.mb_name, current.mb_cpu_socket, name, socket);
+          this.builds.splice(this.id - 1, 1, new_component);
+          //Lisan massiivi purgi
+          //this.builds.push(new_component);
+          console.log(JSON.stringify(this.builds));
+          // JSONI stringina salvestan localStorage'sse
+          localStorage.setItem('builds', JSON.stringify(this.builds));
+
+          var li = new_component.createHtmlElement();
+          document.querySelector('.list-of-builds').appendChild(li);
+        }
+
+      },
+
+      checkCPU: function(event) {
+        var cpu = null;
+        var that = this;
+        document.querySelector('#cpu_socket').addEventListener("keyup", function() {
+          cpu = document.getElementById('cpu_socket').value;
+          if(localStorage.builds) {
+            if(cpu != that.builds[that.id - 1].mb_cpu_socket) {
+              document.querySelector('.answer').innerHTML = "<strong><p style='color: red;'>Pesad ei sobi omavahel kokku!</p></strong>";
+            } else {
+              document.querySelector('.answer').innerHTML = "<strong><p style='color: green;'>Klapib!</p></strong>";
+            }
+          }
+        });
+
+      },
+
       showAnswer: function(bool) {
         if(bool === true) {
           document.querySelector('.answer').innerHTML = "<strong><p style='color: green;'>Salvestatud!</p></strong>";
@@ -199,7 +247,7 @@
         } else {
           // 404
           console.log("404");
-          window.location.hash = "#home-view";
+          //window.location.hash = "#home-view";
         }
       },
       updateMenu: function() {
@@ -216,27 +264,24 @@
 
     };
 
-    var Jar = function(title, ingredients, date) {
-      this.title = title;
-      this.ingredients = ingredients;
-      this.date = date;
+    var Component = function(id, mb_name, mb_cpu_socket, cpu_name, cpu_socket) {
+      this.id = id;
+      this.mb_name = mb_name;
+      this.mb_cpu_socket = mb_cpu_socket;
+      this.cpu_name = cpu_name;
+      this.cpu_socket = cpu_socket;
     };
 
-    Jar.prototype = {
+    Component.prototype = {
       createHtmlElement: function() {
-        // Anda tagasi ilus html
-        // li
-        //  span.letter
-        //    M
-        //  span.content
-        //    title | ingredients
 
         var li = document.createElement('li');
+        li.id = 'build-' + this.id;
 
         var span = document.createElement('span');
         span.className = 'letter';
 
-        var letter = document.createTextNode(this.title.charAt(0));
+        var letter = document.createTextNode(this.id);
         span.appendChild(letter);
 
         li.appendChild(span);
@@ -244,7 +289,7 @@
         var content_span = document.createElement('span');
         content_span.className = 'content';
 
-        var content = document.createTextNode(this.title + ' | ' + this.ingredients + ' | ' + this.date);
+        var content = document.createTextNode('MB: ' + this.mb_name + ', CPU: ' + this.cpu_name);
         content_span.appendChild(content);
 
         li.appendChild(content_span);

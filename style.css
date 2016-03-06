@@ -137,12 +137,12 @@ td {
     color: rgb(146, 168, 209);
     border: 1px solid rgb(146, 168, 209);
 }
-.list-of-jars {
+.list-of-builds {
     list-style-type: none;
     padding-left: 0;
     margin-bottom: 60px;
 }
-.list-of-jars li {
+.list-of-builds li {
     margin-bottom: 10px;
 
 }
