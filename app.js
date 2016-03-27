@@ -95,7 +95,7 @@
           //Tekitan loendi htmli
           this.builds.forEach(function(component) {
 
-            var new_component = new Component(component.id, component.mb_name, component.mb_cpu_socket, component.cpu_name, component.cpu_socket);
+            var new_component = new Component(guid(), component.mb_name, component.mb_cpu_socket, component.cpu_name, component.cpu_socket);
 
             var li = new_component.createHtmlElement();
             document.querySelector('.list-of-builds').appendChild(li);
@@ -154,7 +154,7 @@
           this.currentBuildRoute = "cpu-view";
           this.viewChange();
           this.showAnswer(true);
-          this.id = this.builds.length + 1;
+          this.id = guid();
           var new_component = new Component(this.id, motherboard, socket);
 
           //Lisan massiivi purgi
@@ -180,11 +180,20 @@
           this.currentBuildRoute = "mb-view";
           this.viewChange();
           this.showAnswer(true);
-          var current = this.builds[this.id - 1];
+
+          var current_place = 0;
+
+          for(var i = 0; i < this.builds.length; i++) {
+            if(this.builds[i].id === this.id) {
+              current_place = i;
+            }
+          }
+
+          var current = this.builds[current_place];
 
           document.getElementById('build-' + (this.id)).style.display = "none";
           var new_component = new Component(current.id, current.mb_name, current.mb_cpu_socket, name, socket);
-          this.builds.splice(this.id - 1, 1, new_component);
+          this.builds.splice(current_place, 1, new_component);
           //Lisan massiivi purgi
           //this.builds.push(new_component);
           console.log(JSON.stringify(this.builds));
@@ -200,10 +209,20 @@
       checkCPU: function(event) {
         var cpu = null;
         var that = this;
+        var current = 0;
+
         document.querySelector('#cpu_socket').addEventListener("keyup", function() {
           cpu = document.getElementById('cpu_socket').value;
           if(localStorage.builds) {
-            if(cpu != that.builds[that.id - 1].mb_cpu_socket) {
+
+            for(var i = 0; i < that.builds.length; i++) {
+              if(that.builds[i].id === that.id) {
+                current = i;
+              }
+            }
+
+
+            if(cpu != that.builds[current].mb_cpu_socket) {
               document.querySelector('.answer').innerHTML = "<strong><p style='color: red;'>Pesad ei sobi omavahel kokku!</p></strong>";
             } else {
               document.querySelector('.answer').innerHTML = "<strong><p style='color: green;'>Klapib!</p></strong>";
@@ -219,6 +238,45 @@
         } else {
           document.querySelector('.answer').innerHTML = "<strong><p style='color: red;'>Palun täida kõik lahtrid!</p></strong>";
         }
+      },
+
+      deleteBuild: function(event) {
+
+        console.log(event.target);
+
+        //Li
+        console.log(event.target.parentNode);
+
+        //UL
+        console.log(event.target.parentNode.parentNode);
+
+        //id
+        console.log(event.target.dataset);
+
+        
+        var c = confirm("Oled kindel?");
+
+        //Ei
+        if(!c) {
+          return;
+        }
+
+        var ul = event.target.parentNode.parentNode;
+        var li = event.target.parentNode;
+
+        ul.removeChild(li);
+
+        var delete_id = event.target.dataset.id;
+
+        //Kustutan objekti
+        for(var i = 0; i < this.builds.length; i++) {
+          if(this.builds[i].id == delete_id) {
+            this.builds.splice(i, 1);
+            break;
+          }
+        }
+
+        localStorage.setItem("builds", JSON.stringify(this.builds));
       },
 
       viewChange: function() {
@@ -278,13 +336,13 @@
         var li = document.createElement('li');
         li.id = 'build-' + this.id;
 
-        var span = document.createElement('span');
+        /*var span = document.createElement('span');
         span.className = 'letter';
 
-        var letter = document.createTextNode(this.id);
+        var letter = document.createTextNode(this.mb_name);
         span.appendChild(letter);
 
-        li.appendChild(span);
+        li.appendChild(span);*/
 
         var content_span = document.createElement('span');
         content_span.className = 'content';
@@ -294,11 +352,36 @@
 
         li.appendChild(content_span);
 
+        var span_delete = document.createElement('span');
+        span_delete.style.color = "#FF0000";
+        span_delete.style.cursor = "pointer";
+
+        span_delete.setAttribute("data-id", this.id);
+
+        span_delete.innerHTML = " Delete";
+        li.appendChild(span_delete);
+
+        span_delete.addEventListener("click", Computer.instance.deleteBuild.bind(Computer.instance));
+
+
         //console.log(li);
 
         return li;
       }
     };
+
+    function guid(){
+      var d = new Date().getTime();
+      if(window.performance && typeof window.performance.now === "function"){
+          d += performance.now(); //use high-precision timer if available
+      }
+      var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = (d + Math.random()*16)%16 | 0;
+          d = Math.floor(d/16);
+          return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+      });
+      return uuid;
+    }
 
     window.onload = function() {
       var app = new Computer();
