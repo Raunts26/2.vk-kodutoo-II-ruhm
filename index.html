@@ -5,6 +5,7 @@
   <title>Build</title>
   <link rel="stylesheet" href="style.css">
   <script src="app.js"></script>
+  <script src="edit.js"></script>
 </head>
 <body>
   <div id="web-content">
@@ -31,32 +32,20 @@
 
         <div id="mb-view">
           <label for="motherboard">Emaplaadi nimi: </label><br>
-          <input type="text" name="motherboard" class="motherboard"><br>
+          <input type="text" name="motherboard" class="motherboard component"><br>
 
           <label for="socket">Protsessori pesa: </label><br>
-          <input type="text" name="socket" class="socket"><br>
+          <input type="text" name="socket" class="socket component"><br>
 
-          <label for="ram-socket">Mälusiin: </label><br>
-          <input type="text" name="ram-socket" class="ram-socket"><br>
-
-          <label for="max-ram">Maksimaalne mälu(GB): </label><br>
-          <input type="text" name="max-ram" class="max-ram"><br>
-
-          <label for="sata">SATA pesa: </label><br>
-          <input type="text" name="sata" class="sata"><br>
-
-          <label for="sata-amount">SATA pesade arv: </label><br>
-          <input type="text" name="sata-amount" class="sata-amount"><br>
-
-          <button class="add-mb">Edasi</button>
+          <button id="mother-button" class="add-mb">Edasi</button>
         </div>
 
         <div id="cpu-view">
           <label for="cpu">CPU nimi: </label><br>
-          <input id="cpu_name" type="text" name="cpu" class="cpu_name"><br>
+          <input id="cpu_name" type="text" name="cpu" class="cpu_name component"><br>
 
           <label for="cpu">CPU pesa: </label><br>
-          <input id="cpu_socket" type="text" name="cpu" class="cpu_socket"><br>
+          <input id="cpu_socket" type="text" name="cpu" class="cpu_socket component"><br>
 
           <button class="add-cpu">Edasi</button>
         </div>
